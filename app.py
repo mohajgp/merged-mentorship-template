@@ -59,6 +59,17 @@ def load_and_merge_data():
 
     return pd.concat([df_old, df_new], ignore_index=True)
 
+# -------------------- ALL COUNTIES --------------------
+all_counties_47 = [
+    "Mombasa", "Kwale", "Kilifi", "Tana River", "Lamu", "Taita Taveta",
+    "Garissa", "Wajir", "Mandera", "Marsabit", "Isiolo", "Meru", "Tharaka Nithi",
+    "Embu", "Kitui", "Machakos", "Makueni", "Nyandarua", "Nyeri", "Kirinyaga",
+    "Murang'a", "Kiambu", "Turkana", "West Pokot", "Samburu", "Trans Nzoia",
+    "Uasin Gishu", "Elgeyo Marakwet", "Nandi", "Baringo", "Laikipia", "Nakuru",
+    "Narok", "Kajiado", "Kericho", "Bomet", "Kakamega", "Vihiga", "Bungoma",
+    "Busia", "Siaya", "Kisumu", "Homa Bay", "Migori", "Kisii", "Nyamira", "Nairobi"
+]
+
 # -------------------- LOAD DATA --------------------
 df = load_and_merge_data()
 
@@ -116,6 +127,7 @@ col4.metric("👥 Unique Participants", total_participants)
 
 # -------------------- AUTO-GENERATED SUMMARY --------------------
 st.subheader("📝 Auto-Generated Summary Report")
+no_submission_counties = [c for c in all_counties_47 if c not in filtered_df['County'].unique()]
 summary_text = f"""
 📅 **Date Range**: {start_date} to {end_date}
 
@@ -124,7 +136,7 @@ summary_text = f"""
 📍 **Counties Covered**: {unique_counties}
 👥 **Unique Participants**: {total_participants}
 
-🚫 **Counties with No Submissions**: {len([c for c in all_counties_47 if c not in filtered_df['County'].unique()])}
+🚫 **Counties with No Submissions**: {len(no_submission_counties)}
 """
 st.text_area("📋 Copy this Summary for Emailing:", value=summary_text, height=200)
 if st.button("📋 Copy to Clipboard"):
@@ -161,19 +173,6 @@ st.plotly_chart(fig_time, use_container_width=True)
 
 # -------------------- NON-SUBMISSIONS --------------------
 st.subheader("🚫 Counties with No Submissions")
-all_counties_47 = [
-    "Mombasa", "Kwale", "Kilifi", "Tana River", "Lamu", "Taita Taveta",
-    "Garissa", "Wajir", "Mandera", "Marsabit", "Isiolo", "Meru", "Tharaka Nithi",
-    "Embu", "Kitui", "Machakos", "Makueni", "Nyandarua", "Nyeri", "Kirinyaga",
-    "Murang'a", "Kiambu", "Turkana", "West Pokot", "Samburu", "Trans Nzoia",
-    "Uasin Gishu", "Elgeyo Marakwet", "Nandi", "Baringo", "Laikipia", "Nakuru",
-    "Narok", "Kajiado", "Kericho", "Bomet", "Kakamega", "Vihiga", "Bungoma",
-    "Busia", "Siaya", "Kisumu", "Homa Bay", "Migori", "Kisii", "Nyamira", "Nairobi"
-]
-
-submitted_counties = filtered_df['County'].unique().tolist()
-no_submission_counties = [c for c in all_counties_47 if c not in submitted_counties]
-
 if no_submission_counties:
     st.error(f"🚫 Counties with **NO** Submissions: {', '.join(no_submission_counties)}")
 else:

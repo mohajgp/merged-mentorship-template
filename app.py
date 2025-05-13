@@ -3,6 +3,8 @@ import pandas as pd
 import plotly.express as px
 from datetime import datetime
 import pyperclip
+from io import BytesIO
+from docx import Document
 
 # -------------------- PAGE CONFIGURATION --------------------
 st.set_page_config(
@@ -125,12 +127,37 @@ summary_text = f"""
 🚫 **Counties with No Submissions**: {len([c for c in all_counties_47 if c not in filtered_df['County'].unique()])}
 """
 st.text_area("📋 Copy this Summary for Emailing:", value=summary_text, height=200)
+if st.button("📋 Copy to Clipboard"):
+    pyperclip.copy(summary_text)
+    st.success("✅ Summary copied to clipboard!")
+
+# -------------------- DOWNLOAD WORD REPORT --------------------
+st.subheader("📄 Export Summary to Word Document")
+if st.button("⬇️ Generate Word Report"):
+    doc = Document()
+    doc.add_heading("KNCCI Jiinue Mentorship Summary Report", level=1)
+    doc.add_paragraph(summary_text)
+    buffer = BytesIO()
+    doc.save(buffer)
+    buffer.seek(0)
+    st.download_button(
+        label="📥 Download Word Report",
+        data=buffer,
+        file_name=f"Mentorship_Summary_{datetime.now().date()}.docx",
+        mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    )
 
 # -------------------- COUNTY SUBMISSION BAR CHART --------------------
 st.subheader("📍 Submissions by County")
 county_counts = filtered_df.groupby('County').size().reset_index(name='Submissions')
 fig_bar = px.bar(county_counts, x='County', y='Submissions', color='County', title='Number of Submissions by County')
 st.plotly_chart(fig_bar, use_container_width=True)
+
+# -------------------- SUBMISSIONS OVER TIME --------------------
+st.subheader("📆 Submissions Over Time")
+daily_counts = filtered_df.groupby(filtered_df['Timestamp'].dt.date).size().reset_index(name='Submissions')
+fig_time = px.line(daily_counts, x='Timestamp', y='Submissions', title='Daily Submission Trend')
+st.plotly_chart(fig_time, use_container_width=True)
 
 # -------------------- NON-SUBMISSIONS --------------------
 st.subheader("🚫 Counties with No Submissions")

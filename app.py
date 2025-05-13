@@ -112,6 +112,20 @@ col2.metric("📊 Filtered Sessions", f"{filtered_sessions:,}")
 col3.metric("📍 Counties Covered", unique_counties)
 col4.metric("👥 Unique Participants", total_participants)
 
+# -------------------- AUTO-GENERATED SUMMARY --------------------
+st.subheader("📝 Auto-Generated Summary Report")
+summary_text = f"""
+📅 **Date Range**: {start_date} to {end_date}
+
+✅ **Total Submissions**: {total_sessions:,}
+📊 **Filtered Submissions**: {filtered_sessions:,}
+📍 **Counties Covered**: {unique_counties}
+👥 **Unique Participants**: {total_participants}
+
+🚫 **Counties with No Submissions**: {len([c for c in all_counties_47 if c not in filtered_df['County'].unique()])}
+"""
+st.text_area("📋 Copy this Summary for Emailing:", value=summary_text, height=200)
+
 # -------------------- COUNTY SUBMISSION BAR CHART --------------------
 st.subheader("📍 Submissions by County")
 county_counts = filtered_df.groupby('County').size().reset_index(name='Submissions')

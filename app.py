@@ -7,11 +7,10 @@ import pyperclip
 # -------------------- PAGE CONFIGURATION --------------------
 st.set_page_config(
     page_title="KNCCI Mentorship Dashboard",
-    page_icon="\ud83d\udcda",
     layout="wide"
 )
 
-st.title("\ud83d\udcda KNCCI Jiinue Mentorship Dashboard")
+st.title("KNCCI Jiinue Mentorship Dashboard")
 st.caption("Tracking Mentorship Sessions by Field Officers")
 
 # -------------------- SETTINGS --------------------
@@ -62,17 +61,17 @@ def load_and_merge_data():
 df = load_and_merge_data()
 
 if df.empty:
-    st.error("\u274c No data available! Please check both spreadsheets.")
+    st.error("❌ No data available! Please check both spreadsheets.")
     st.stop()
 
 # -------------------- SIDEBAR FILTERS --------------------
-st.sidebar.header("\ud83d\uddd3\ufe0f Filter Sessions")
+st.sidebar.header("🗓️ Filter Sessions")
 
 min_date = df['Timestamp'].min().date()
 max_date = df['Timestamp'].max().date()
 
-st.sidebar.markdown(f"\ud83d\uddd3\ufe0f **Earliest Submission**: `{min_date}`")
-st.sidebar.markdown(f"\ud83d\uddd3\ufe0f **Latest Submission**: `{max_date}`")
+st.sidebar.markdown(f"🗓️ **Earliest Submission**: `{min_date}`")
+st.sidebar.markdown(f"🗓️ **Latest Submission**: `{max_date}`")
 
 # Date Range Filter
 date_range = st.sidebar.date_input("Select Date Range:", value=(min_date, max_date), min_value=min_date, max_value=max_date)
@@ -100,7 +99,7 @@ filtered_df = df[
 ]
 
 # -------------------- METRICS --------------------
-st.subheader("\ud83d\udcc8 Summary Metrics")
+st.subheader("📈 Summary Metrics")
 
 total_sessions = df.shape[0]
 filtered_sessions = filtered_df.shape[0]
@@ -108,39 +107,48 @@ unique_counties = filtered_df['County'].nunique()
 total_participants = filtered_df.drop_duplicates(subset=['County', 'Gender']).shape[0]
 
 col1, col2, col3, col4 = st.columns(4)
-col1.metric("\u2705 Total Sessions", f"{total_sessions:,}")
-col2.metric("\ud83d\udcca Filtered Sessions", f"{filtered_sessions:,}")
-col3.metric("\ud83d\udccd Counties Covered", unique_counties)
-col4.metric("\ud83d\udc65 Unique Participants", total_participants)
+col1.metric("✅ Total Sessions", f"{total_sessions:,}")
+col2.metric("📊 Filtered Sessions", f"{filtered_sessions:,}")
+col3.metric("📍 Counties Covered", unique_counties)
+col4.metric("👥 Unique Participants", total_participants)
 
 # -------------------- COUNTY SUBMISSION BAR CHART --------------------
-st.subheader("\ud83d\udccd Submissions by County")
+st.subheader("📍 Submissions by County")
 county_counts = filtered_df.groupby('County').size().reset_index(name='Submissions')
 fig_bar = px.bar(county_counts, x='County', y='Submissions', color='County', title='Number of Submissions by County')
 st.plotly_chart(fig_bar, use_container_width=True)
 
 # -------------------- NON-SUBMISSIONS --------------------
-st.subheader("\u274c Counties with No Submissions")
-all_counties_47 = [...]
+st.subheader("🚫 Counties with No Submissions")
+all_counties_47 = [
+    "Mombasa", "Kwale", "Kilifi", "Tana River", "Lamu", "Taita Taveta",
+    "Garissa", "Wajir", "Mandera", "Marsabit", "Isiolo", "Meru", "Tharaka Nithi",
+    "Embu", "Kitui", "Machakos", "Makueni", "Nyandarua", "Nyeri", "Kirinyaga",
+    "Murang'a", "Kiambu", "Turkana", "West Pokot", "Samburu", "Trans Nzoia",
+    "Uasin Gishu", "Elgeyo Marakwet", "Nandi", "Baringo", "Laikipia", "Nakuru",
+    "Narok", "Kajiado", "Kericho", "Bomet", "Kakamega", "Vihiga", "Bungoma",
+    "Busia", "Siaya", "Kisumu", "Homa Bay", "Migori", "Kisii", "Nyamira", "Nairobi"
+]
+
 submitted_counties = filtered_df['County'].unique().tolist()
 no_submission_counties = [c for c in all_counties_47 if c not in submitted_counties]
 
 if no_submission_counties:
-    st.error(f"\u274c Counties with **NO** Submissions: {', '.join(no_submission_counties)}")
+    st.error(f"🚫 Counties with **NO** Submissions: {', '.join(no_submission_counties)}")
 else:
-    st.success("\u2705 All counties have submissions in selected date range.")
+    st.success("✅ All counties have submissions in selected date range.")
 
 # -------------------- DATA TABLE & DOWNLOAD --------------------
-st.subheader("\ud83d\udcc4 Filtered Data Table")
+st.subheader("📄 Filtered Data Table")
 if not filtered_df.empty:
     st.dataframe(filtered_df)
 
     csv_data = filtered_df.to_csv(index=False).encode('utf-8')
     st.download_button(
-        label="\ud83d\udcc5 Download CSV",
+        label="📅 Download CSV",
         data=csv_data,
         file_name=f"Mentorship_Submissions_{datetime.now().date()}.csv",
         mime='text/csv'
     )
 else:
-    st.info("\u2139\ufe0f No submissions match current filters.")
+    st.info("ℹ️ No submissions match current filters.")

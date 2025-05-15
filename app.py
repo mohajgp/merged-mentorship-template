@@ -54,4 +54,4 @@ st.subheader("📄 Filtered Data Table")
 st.dataframe(filtered_df)
 
 csv_data = filtered_df.to_csv(index=False).encode('utf-8')
-st.download_button("📥 Download CSV", data=csv_data, file_name="Filtered_Mentorship_Data.csv", mime='text/csv')
+st.download_button("📥 Download CSV", data=csv_data, file_name=f"Filtered_Mentorship_Data_{datetime.now().date()}.csv", mime='text/csv')

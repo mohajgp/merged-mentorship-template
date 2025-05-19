@@ -59,7 +59,6 @@ if df.empty:
 
 # -------------------- SIDEBAR FILTERS --------------------
 st.sidebar.header("🗓️ Filter Sessions")
-
 min_date = df['Timestamp'].min().date()
 max_date = df['Timestamp'].max().date()
 
@@ -71,7 +70,6 @@ filtered_df = df[(df['Timestamp'].dt.date >= start_date) & (df['Timestamp'].dt.d
 
 # -------------------- METRICS --------------------
 st.subheader("📈 Summary Metrics")
-
 total_sessions = df.shape[0]
 filtered_sessions = filtered_df.shape[0]
 
@@ -88,3 +86,13 @@ st.dataframe(county_totals)
 
 fig_bar = px.bar(county_totals, x='County', y='Submissions', color='County', title='Number of Submissions by County')
 st.plotly_chart(fig_bar, use_container_width=True)
+
+# -------------------- DOWNLOAD COUNTY TOTALS --------------------
+st.subheader("⬇️ Download County Submissions CSV")
+csv_data = county_totals.to_csv(index=False).encode('utf-8')
+st.download_button(
+    label="📥 Download County Submissions CSV",
+    data=csv_data,
+    file_name=f"County_Submissions_{datetime.now().date()}.csv",
+    mime='text/csv'
+)
